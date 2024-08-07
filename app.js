@@ -3,14 +3,14 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
 const presentationsRoutes = require('./routes/presentations-routes');
-// const slidesRoutes = require('./routes/slides-routes');
+const slidesRoutes = require('./routes/slides-routes');
 
 const app = express();
 
 app.use(bodyParser.json());
 
 app.use('/api/presentations', presentationsRoutes);
-// app.use('/api/slides', slidesRoutes);
+app.use('/api/slides', slidesRoutes);
 
 
 // const url = 'mongodb+srv://reviewer:!bEDv.#qXK5_WmE@cluster0.mongodb.net/presentation?retryWrites=true&w=majority';

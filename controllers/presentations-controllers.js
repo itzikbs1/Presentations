@@ -1,17 +1,17 @@
 const { validationResult } = require('express-validator');
 const mongoose = require('mongoose');
 
-const Presentation = require('../models/presentation');
 const HttpError = require('../models/http-error');
+const Presentation = require('../models/presentation');
+const Slide = require('../models/slide');
 
 const createPresentation = async (req, res, next) => {
 
     const errors = validationResult(req);
-
     if(!errors.isEmpty()) {
         return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
-    console.log("presentation-controller, req.body ", req.body);
+
     const { title, authors, dateOfPublishment } = req.body;
     
     let createdPresentation;
@@ -72,21 +72,56 @@ const updatePresentationAuthors = async (req, res, next) => {
     res.status(200).json({ presentation : presentation.toObject({ getters: true })});
 }
 const deletePresentation = async (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return next(new HttpError('Invalid inputs passed, please check your data.', 422));
+    }
     const presentationId = req.params.pid;
     console.log(presentationId);
     let presentation;
     try {
-        presentation = await Presentation.deleteOne({_id: presentationId});
+        presentation = await Presentation.findById(presentationId);
+    } catch (err) {
+        const error = new HttpError('Could not find presentation for the provided id.', 404);
+        return next(error); 
+    }
+    if (!presentation) {
+        const error = new HttpError('Could not find presentation for the provided id.', 500);
+        return next(error);    
+    }
+    // let slides;
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    try {
+        // slides = await Slide.deleteMany({presentationId: presentationId}).session(session);
+        await Slide.deleteMany({presentationId: presentationId}).session(session);
+        presentation = await Presentation.deleteOne({_id: presentationId}).session(session);
+        await session.commitTransaction();
     } catch(err) {
+        await session.abortTransaction();
         const error = new HttpError('Could not delete presentation for the provided id.', 500);
         return next(error);
     }
-    if (!presentation) {
-        const error = new HttpError('Could not find and delete presentation for the provided id.', 500);
-        return next(error);    
-    }
+    await session.endSession();
+
     res.status(200).json({message: 'Deleted presentation.'});
 }
+// const deletePresentation = async (req, res, next) => {
+//     const presentationId = req.params.pid;
+//     console.log(presentationId);
+//     let presentation;
+//     try {
+//         presentation = await Presentation.deleteOne({_id: presentationId});
+//     } catch(err) {
+//         const error = new HttpError('Could not delete presentation for the provided id.', 500);
+//         return next(error);
+//     }
+//     if (!presentation) {
+//         const error = new HttpError('Could not find and delete presentation for the provided id.', 500);
+//         return next(error);    
+//     }
+//     res.status(200).json({message: 'Deleted presentation.'});
+// }
 
 const getAllPresntations = async (req, res, next) => {
 
