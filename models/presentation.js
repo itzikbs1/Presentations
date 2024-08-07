@@ -7,5 +7,4 @@ const presentationSchema = new Schema({
     dateOfPublishment: { type: Date, default: Date.now } 
 });
 
-
 module.exports = mongoose.model('Presentation', presentationSchema);
