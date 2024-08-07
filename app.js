@@ -15,6 +15,7 @@ app.use('/api/presentations', presentationsRoutes);
 
 // const url = 'mongodb+srv://reviewer:!bEDv.#qXK5_WmE@cluster0.mongodb.net/presentation?retryWrites=true&w=majority';
 // const url = 'mongodb+srv://reviewer:%21bEDv.%23qXK5_WmE@cluster0.mongodb.net/presentation?retryWrites=true&w=majority';
+
 const url = 'mongodb+srv://itzik:ic5jpUQGf2xHuDA6@cluster0.v2xxhfv.mongodb.net/presentation?retryWrites=true&w=majority&appName=Cluster0'
 mongoose.connect(url)
         .then(() => {

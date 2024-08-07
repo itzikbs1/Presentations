@@ -105,6 +105,7 @@ const getAllPresntations = async (req, res, next) => {
     res.status(200).json({presentations : presentations.map(presentation => presentation.toObject({ getters: true}))});
 }
 
+
 exports.createPresentation = createPresentation;
 exports.getPresentationByTitle = getPresentationByTitle;
 exports.updatePresentationAuthors = updatePresentationAuthors;
