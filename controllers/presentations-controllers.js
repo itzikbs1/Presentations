@@ -26,20 +26,16 @@ const createPresentation = async (req, res, next) => {
         if (err.code === 11000) {
             const error = new HttpError('Error: Duplicate title.', 422);
             return next(error);
-            // console.error("Error: Duplicate title");
         } else {
             const error = new HttpError(err, 404);
             return next(error);
-            // console.error(erro);
         }
     }
     res.status(201).json({ presentation : createdPresentation.toObject({ getters: true }) });
 };
 const getPresentationByTitle = async (req, res, next) => {
-    console.log("getPresentationByTitle, req.params ", req.params);
-    // console.log("getPresentationByTitle, req.body ", req.body);
     const presentationTitle = req.params.ptitle;
-    console.log("presentationTitle ", presentationTitle);
+
     let presentation;
     try {
         presentation = await Presentation.find({ title: presentationTitle });
@@ -51,14 +47,18 @@ const getPresentationByTitle = async (req, res, next) => {
 }
 const updatePresentationAuthors = async (req, res, next) => {
     const presentationId = req.params.pid;
-    console.log("updatePresentationAuthors, presentationId ", presentationId);
 
-    let authors = req.body.authors;
-    console.log("updatePresentationAuthors, authors ", authors);
+    let author = req.body.authors[0];
 
     let presentation;
     try {
         presentation = await Presentation.findById(presentationId);
+        let authors = presentation.authors;
+        if (authors.includes(author)) {
+            authors = authors.filter(au => au !== author);
+        } else {
+            authors.push(author);
+        }
         presentation.authors = authors;
         await presentation.save();
     } catch(err) {
@@ -77,7 +77,6 @@ const deletePresentation = async (req, res, next) => {
         return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
     const presentationId = req.params.pid;
-    console.log(presentationId);
     let presentation;
     try {
         presentation = await Presentation.findById(presentationId);
@@ -89,11 +88,9 @@ const deletePresentation = async (req, res, next) => {
         const error = new HttpError('Could not find presentation for the provided id.', 500);
         return next(error);    
     }
-    // let slides;
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        // slides = await Slide.deleteMany({presentationId: presentationId}).session(session);
         await Slide.deleteMany({presentationId: presentationId}).session(session);
         presentation = await Presentation.deleteOne({_id: presentationId}).session(session);
         await session.commitTransaction();
@@ -106,22 +103,6 @@ const deletePresentation = async (req, res, next) => {
 
     res.status(200).json({message: 'Deleted presentation.'});
 }
-// const deletePresentation = async (req, res, next) => {
-//     const presentationId = req.params.pid;
-//     console.log(presentationId);
-//     let presentation;
-//     try {
-//         presentation = await Presentation.deleteOne({_id: presentationId});
-//     } catch(err) {
-//         const error = new HttpError('Could not delete presentation for the provided id.', 500);
-//         return next(error);
-//     }
-//     if (!presentation) {
-//         const error = new HttpError('Could not find and delete presentation for the provided id.', 500);
-//         return next(error);    
-//     }
-//     res.status(200).json({message: 'Deleted presentation.'});
-// }
 
 const getAllPresntations = async (req, res, next) => {
 
@@ -132,8 +113,7 @@ const getAllPresntations = async (req, res, next) => {
         const error = new HttpError('Could not find any presentation. ', 404);
         return next(error);
     }
-    console.log(presentations);
-    if(!presentations.legth === 0) {
+    if(!presentations.length === 0) {
         const error = new HttpError('Could not find any presentation. ', 500);
         return next(error);
     }
