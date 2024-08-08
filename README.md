@@ -50,5 +50,4 @@ This project is a Presentation Management System built with Node.js, Express.js,
 - git clone https://github.com/itzikbs1/Presentations.git
 - cd Presentations
 - npm install
-- set up the .env for the MongoDB connection. MONGODB_URI=your_mongodb_uri, PORT=your_preferred_port
 - npm start
