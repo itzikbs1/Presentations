@@ -47,7 +47,6 @@ const getPresentationByTitle = async (req, res, next) => {
         const error = new HttpError('Could not find the presentation for the provided title', 404);
         return next(error);    
     }
-    console.log("presentation ", presentation.map(pre => pre.toObject({ getters: true})));
     
     res.status(200).json({ presentation : presentation.map(pre => pre.toObject({ getters: true})) });
 }
