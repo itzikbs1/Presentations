@@ -43,7 +43,13 @@ const getPresentationByTitle = async (req, res, next) => {
         const error = new HttpError('Could not get the presentation for the provided title', 500);
         return next(error);
     }
-    res.status(200).json({ presentation: presentation });
+    if(presentation.length === 0) {
+        const error = new HttpError('Could not find the presentation for the provided title', 404);
+        return next(error);    
+    }
+    console.log("presentation ", presentation.map(pre => pre.toObject({ getters: true})));
+    
+    res.status(200).json({ presentation : presentation.map(pre => pre.toObject({ getters: true})) });
 }
 const updatePresentationAuthors = async (req, res, next) => {
     const presentationId = req.params.pid;
