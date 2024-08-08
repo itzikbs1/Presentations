@@ -27,6 +27,24 @@ This project is a Presentation Management System built with Node.js, Express.js,
 - **title:** String (Unique) - The title of the slide.
 - **description:** String - A brief description of the slide.
 - **presentationId:** ObjectId - The ID of the presentation to which this slide belongs.
+## API Endpoints
+### Presentation Routes (/api/presentations)
+- **GET /api/presentations/**
+: Fetch a presentation by its title.
+- **POST /api/presentations**: Create a new presentation. (Requires title and authors)
+- **PATCH /api/presentations/**
+: Update the author list of a presentation by its ID.
+- **DELETE /api/presentations/**
+: Delete a presentation by its ID.
+- **GET /api/presentations**: Get all presentations.
+
+### Slide Routes (/api/slides)
+- **POST /api/slides**: Add a new slide to a presentation. (Requires title, description, and presentationId)
+- **PATCH /api/slides/**
+: Update an existing slide by its ID.
+- **DELETE /api/slides/**
+: Delete a slide by its ID.
+
 
 # How to run:
 - git clone https://github.com/itzikbs1/Presentations.git
